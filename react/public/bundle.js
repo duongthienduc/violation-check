@@ -72,6 +72,8 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -134,7 +136,7 @@
 	    {
 	      rowHeight: 50,
 	      rowsCount: violations.length,
-	      width: 1300,
+	      width: 1400,
 	      height: 600,
 	      headerHeight: 50
 	    },
@@ -190,7 +192,7 @@
 	          violations[rowIndex].board
 	        );
 	      },
-	      width: 100
+	      width: 130
 	    }),
 	    _react2.default.createElement(_fixedDataTable.Column, {
 	      header: _react2.default.createElement(
@@ -247,6 +249,14 @@
 	    _this.handleBoardFilter = function (evt) {
 	      var boardFilter = evt.target.value.trim();
 	      var filteredData = [];
+
+	      if ('***' === boardFilter) {
+	        _this.setState({
+	          data: [].concat(_toConsumableArray(_this.originalData))
+	        });
+
+	        return;
+	      }
 
 	      if (boardFilter && boardFilter.length >= MIN_BOARD_DIGITS_TO_SEARCH) {
 	        filteredData = _this.originalData.filter(function (item) {
