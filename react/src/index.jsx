@@ -1,11 +1,14 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { Throttle } from 'react-throttle';
-
+import ReactGA from 'react-ga';
 import {Table, Column, Cell} from 'fixed-data-table-2';
 import axios from 'axios';
 import dateFormat from 'date-format-lite';
 import shortid from 'shortid';
+
+ReactGA.initialize('UA-4112584-7');
+ReactGA.ga('send', 'pageview');
 
 const MIN_BOARD_DIGITS_TO_SEARCH = 3;
 
@@ -170,4 +173,5 @@ class ViolationCheckerApp extends React.Component {
     );
   }
 }
+
 render(<ViolationCheckerApp />, document.getElementById('container'));
