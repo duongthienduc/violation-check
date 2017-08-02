@@ -1,105 +1,163 @@
 import React from 'react';
 import { render } from 'react-dom';
+import { Throttle } from 'react-throttle';
+
+import {Table, Column, Cell} from 'fixed-data-table-2';
 import axios from 'axios';
+import dateFormat from 'date-format-lite';
+import shortid from 'shortid';
 
-console.clear();
+const MIN_BOARD_DIGITS_TO_SEARCH = 3;
 
-const Title = ({todoCount}) => {
+const Title = ({ violationCount, updateTime }) => {
   return (
     <div>
-       <div>
-          <h1>to-do ({todoCount})</h1>
-       </div>
+      <div>
+        <h1>Số vi phạm: {violationCount}</h1>
+        <h2>Ngày cập nhật: {updateTime}</h2>
+      </div>
     </div>
   );
 }
 
-const TodoForm = ({addTodo}) => {
-  // Input Tracker
-  let input;
-  // Return JSX
+const Contact = () => {
   return (
-    <form onSubmit={(e) => {
-        e.preventDefault();
-        addTodo(input.value);
-        input.value = '';
-      }}>
-      <input className="form-control col-md-12" ref={node => {
-        input = node;
-      }} />
-      <br />
-    </form>
+    <div>
+      <span>Liên hệ</span>
+      <a href="mailto:namho1407@gmail.com">Nam Ho</a>
+    </div>
   );
-};
-
-const Todo = ({todo, remove}) => {
-  // Each Todo
-  return (<a href="#" className="list-group-item" onClick={() => {remove(todo.id)}}>{todo.text}</a>);
 }
 
-const TodoList = ({todos, remove}) => {
-  // Map through the todos
-  const todoNode = todos.map((todo) => {
-    return (<Todo todo={todo} key={todo.id} remove={remove}/>)
-  });
-  return (<div className="list-group" style={{marginTop:'30px'}}>{todoNode}</div>);
+const ViolationTable = ({ violations, remove }) => {
+  return (
+    <Table
+      rowHeight={50}
+      rowsCount={violations.length}
+      width={1300}
+      height={600}
+      headerHeight={50}
+    >
+
+      <Column
+        header={<Cell>Ngày</Cell>}
+        cell={({rowIndex, ...props}) => (
+          <Cell {...props}>
+            {violations[rowIndex].date}
+          </Cell>
+        )}
+        width={100}
+      />
+
+      <Column
+        header={<Cell>Giờ</Cell>}
+        cell={({rowIndex, ...props}) => (
+          <Cell {...props}>
+            {violations[rowIndex].time}
+          </Cell>
+        )}
+        width={100}
+      />
+      <Column
+        header={<Cell>Biển số</Cell>}
+        cell={({rowIndex, ...props}) => (
+          <Cell {...props}>
+            {violations[rowIndex].board}
+          </Cell>
+        )}
+        width={100}
+      />
+      <Column
+        header={<Cell>Lỗi Vi Phạm</Cell>}
+        cell={({rowIndex, ...props}) => (
+          <Cell {...props}>
+            {violations[rowIndex].violation}
+          </Cell>
+        )}
+        width={400}
+      />
+      <Column
+        header={<Cell>Địa Điểm</Cell>}
+        cell={({rowIndex, ...props}) => (
+          <Cell {...props}>
+            {violations[rowIndex].location}
+          </Cell>
+        )}
+        width={600}
+      />
+    </Table>
+  );
 }
 
 // Container Component
 
-class ViolationCheckerApp extends React.Component{
-  constructor(props){
+class ViolationCheckerApp extends React.Component {
+  constructor(props) {
     // Pass props to parent class
     super(props);
     // Set initial state
     this.state = {
-      data: []
+      data: [],
+      filterBoard: '',
+      updateTime: '',
     }
-    this.apiUrl = 'https://57b1924b46b57d1100a3c3f8.mockapi.io/api/todos'
+
+    this.originalData = [];
+    this.jsonUrl = '/resources/data.json';
   }
   // Lifecycle method
-  componentDidMount(){
+  componentDidMount() {
     // Make HTTP reques with Axios
-    axios.get(this.apiUrl)
+    axios.get(this.jsonUrl)
       .then((res) => {
+        this.originalData = res.data.items;
+
         // Set state with result
-        this.setState({data:res.data});
+        this.setState({
+          updateTime: res.data.date.date().format('YYYY-MM-DD hh:mm:ss'),
+        });
       });
   }
-  // Add todo handler
-  addTodo(val){
-    // Assemble data
-    const todo = {text: val}
-    // Update data
-    axios.post(this.apiUrl, todo)
-       .then((res) => {
-          this.state.data.push(res.data);
-          this.setState({data: this.state.data});
-       });
-  }
-  // Handle remove
-  handleRemove(id){
-    // Filter all todos except the one to be removed
-    const remainder = this.state.data.filter((todo) => {
-      if(todo.id !== id) return todo;
-    });
-    // Update state with filter
-    axios.delete(this.apiUrl+'/'+id)
-      .then((res) => {
-        this.setState({data: remainder});
-      })
-  }
 
-  render(){
-    // Render JSX
+  handleBoardFilter = (evt) => {
+    var boardFilter = evt.target.value.trim();
+    var filteredData = [];
+
+    if (boardFilter && boardFilter.length >= MIN_BOARD_DIGITS_TO_SEARCH) {
+      filteredData = this.originalData.filter((item) => {
+        return item.board.replace('.', '').indexOf(boardFilter) > -1;
+      });
+    }
+
+    this.setState({
+      data: filteredData,
+    });
+  };
+
+  render() {
     return (
       <div>
-        <Title todoCount={this.state.data.length}/>
-        <TodoForm addTodo={this.addTodo.bind(this)}/>
-        <TodoList
-          todos={this.state.data}
-          remove={this.handleRemove.bind(this)}
-        />
+        <Title violationCount={this.state.data.length} updateTime={this.state.updateTime} />
+
+        <div className='filter-wrapper'>
+          <span>Tìm biển số:</span>
+          <Throttle time="500" handler="onChange">
+            <input
+              name='filterBoard' onChange={this.handleBoardFilter}
+              placeholder='Nhập từ 3 chữ số trở lên để tìm kiếm'
+            />
+          </Throttle>
+        </div>
+
+        <div className='violations-wrapper'>
+          <ViolationTable
+            violations={this.state.data}
+          />
+        </div>
+
+        <div className='contact-wrapper'>
+          <Contact />
+        </div>
       </div>
     );
   }

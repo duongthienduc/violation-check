@@ -1,0 +1,26 @@
+.filter-wrapper {
+    margin-top: 15px;
+}
+
+.filter-wrapper span {
+    font-weight: bold;
+    margin-right: 20px;
+}
+
+.filter-wrapper input {
+    width: 300px;
+}
+
+.violations-wrapper {
+    margin-top: 15px;
+}
+
+.contact-wrapper {
+    text-align: center;
+    padding: 15px 0;
+}
+
+.contact-wrapper span {
+    font-weight: bold;
+    margin-right: 15px;
+}
