@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -12,6 +11,7 @@ import java.util.List;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -45,13 +45,10 @@ public class ParseData {
 				Row row = iterator.next();
 				String[] data = new String[4];
 
-				for (int i = 0; i < 5; i++) {
-
-				}
-
 				JSONObject rowJSONObj = new JSONObject();
-				rowJSONObj.put("time", getCellValue(row.getCell(1)) + " " + getCellValue(row.getCell(2)));
-				rowJSONObj.put("board", row.getCell(3));
+				rowJSONObj.put("date", getCellValue(row.getCell(1)));
+				rowJSONObj.put("time", getCellValue(row.getCell(2)));
+				rowJSONObj.put("board", getCellValue(row.getCell(3)));
 				rowJSONObj.put("violation", getCellValue(row.getCell(4)));
 				rowJSONObj.put("location", getCellValue(row.getCell(5)));
 
@@ -59,7 +56,7 @@ public class ParseData {
 			}
 
 			System.out.println("Num items:" + jsonArray.size());
-			jsonObject.put("date", new Date());
+			jsonObject.put("date", new Date().toString());
 			jsonObject.put("items", jsonArray);
 
 			String projectDir = System.getProperty("user.dir");
@@ -68,7 +65,7 @@ public class ParseData {
 			parentDir.mkdirs();
 
 			FileWriter fileWriter = new FileWriter(outFile);
-			fileWriter.write(jsonArray.toJSONString());
+			fileWriter.write(jsonObject.toJSONString());
 			fileWriter.flush();
 			fileWriter.close();
 		} catch (IOException e) {
@@ -93,7 +90,9 @@ public class ParseData {
 	private static String getCellValue(Cell cell) {
 		// cell.setCellType(Cell.CELL_TYPE_STRING);
 		if (cell.getCellTypeEnum().equals(CellType.NUMERIC)) {
-			return String.valueOf(cell.getNumericCellValue());
+			DataFormatter df = new DataFormatter();
+			String value = df.formatCellValue(cell);
+			return value;
 		}
 
 		return cell.getStringCellValue();
