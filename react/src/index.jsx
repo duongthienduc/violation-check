@@ -34,7 +34,7 @@ const ViolationTable = ({ violations, remove }) => {
     <Table
       rowHeight={50}
       rowsCount={violations.length}
-      width={1300}
+      width={1400}
       height={600}
       headerHeight={50}
     >
@@ -65,7 +65,7 @@ const ViolationTable = ({ violations, remove }) => {
             {violations[rowIndex].board}
           </Cell>
         )}
-        width={100}
+        width={130}
       />
       <Column
         header={<Cell>Lỗi Vi Phạm</Cell>}
@@ -122,6 +122,14 @@ class ViolationCheckerApp extends React.Component {
   handleBoardFilter = (evt) => {
     var boardFilter = evt.target.value.trim();
     var filteredData = [];
+
+    if ('***' === boardFilter) {
+      this.setState({
+        data: [...this.originalData],
+      });
+
+      return;
+    }
 
     if (boardFilter && boardFilter.length >= MIN_BOARD_DIGITS_TO_SEARCH) {
       filteredData = this.originalData.filter((item) => {
