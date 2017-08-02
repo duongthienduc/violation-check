@@ -21,6 +21,8 @@ import org.json.simple.JSONObject;
 
 public class ParseData {
 
+	private static final String REACT_PUBLIC_RESOURCES_DATA_JSON = "/react/public/resources/data.json";
+
 	public static void main(String[] args) {
 
 		InputStream is = ParseData.class.getResourceAsStream("/data.xlsx");
@@ -60,7 +62,11 @@ public class ParseData {
 			jsonObject.put("date", new Date());
 			jsonObject.put("items", jsonArray);
 
-			File outFile = new File("/Users/ducduong/ws-java-master/violation-check/out/data.json");
+			String projectDir = System.getProperty("user.dir");
+			File outFile = new File(projectDir + REACT_PUBLIC_RESOURCES_DATA_JSON);
+			File parentDir = outFile.getParentFile();
+			parentDir.mkdirs();
+
 			FileWriter fileWriter = new FileWriter(outFile);
 			fileWriter.write(jsonArray.toJSONString());
 			fileWriter.flush();
