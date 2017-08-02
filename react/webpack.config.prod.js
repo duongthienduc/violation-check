@@ -1,16 +1,19 @@
-var webpack = require('webpack');
-var UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-var WebpackJsObfuscator = require('webpack-js-obfuscator');
-var path = require('path');
+const webpack = require('webpack');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const WebpackJsObfuscator = require('webpack-js-obfuscator');
+const path = require('path');
 
 var BUILD_DIR = path.resolve(__dirname, 'public');
 var APP_DIR = path.resolve(__dirname, 'src');
+var ASSETS_JS_DIR = path.resolve(BUILD_DIR, 'assets/js');
 
 var config = {
     entry: APP_DIR + '/index.jsx',
     output: {
         path: BUILD_DIR,
-        filename: 'bundle.js'
+        filename: 'assets/js/bundle.[chunkhash].js'
     },
     module : {
         loaders : [
@@ -21,7 +24,14 @@ var config = {
             }
         ]
     },
+    devtool: 'cheap-module-source-map',
     plugins: [
+        new CleanWebpackPlugin(['dist']),
+        new HtmlWebpackPlugin({
+            hash: true,
+            inject: true,
+            template: 'my-index.ejs'
+        }),
         new webpack.LoaderOptionsPlugin({
             minimize: true,
             debug: false
@@ -41,7 +51,8 @@ var config = {
                 screw_ie8: true
             },
             comments: false
-        })
+        }),
+        new webpack.HashedModuleIdsPlugin()
     ],
     resolve: {
         extensions: [ '.js', '.jsx' ]
