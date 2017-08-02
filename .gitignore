@@ -2,3 +2,4 @@
 /target/
 /.settings/
 **/.DS_Store
+/react/yarn.lock

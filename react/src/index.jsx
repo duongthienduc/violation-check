@@ -45,10 +45,9 @@ const TodoList = ({todos, remove}) => {
   return (<div className="list-group" style={{marginTop:'30px'}}>{todoNode}</div>);
 }
 
-// Contaner Component
-// Todo Id
-window.id = 0;
-class TodoApp extends React.Component{
+// Container Component
+
+class ViolationCheckerApp extends React.Component{
   constructor(props){
     // Pass props to parent class
     super(props);
@@ -105,4 +104,4 @@ class TodoApp extends React.Component{
     );
   }
 }
-render(<TodoApp />, document.getElementById('container'));
+render(<ViolationCheckerApp />, document.getElementById('container'));
