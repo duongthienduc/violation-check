@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "react/public",
+    "public": "react/dist",
     "rewrites": [
       {
         "source": "**",

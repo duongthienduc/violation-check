@@ -3,5 +3,6 @@
 /.settings/
 **/.DS_Store
 /react/yarn.lock
-react/public/assets/js/bundle*js
+/react/dist
+react/public/assets/js/bundle*
 react/public/index.html

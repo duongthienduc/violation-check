@@ -7,6 +7,9 @@ import axios from 'axios';
 import dateFormat from 'date-format-lite';
 import shortid from 'shortid';
 
+import '../public/assets/css/style.css';
+import '../public/assets/css/fixed-data-table.css';
+
 ReactGA.initialize('UA-4112584-7');
 ReactGA.ga('send', 'pageview');
 
