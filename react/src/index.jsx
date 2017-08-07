@@ -21,6 +21,13 @@ const Title = ({ violationCount, updateTime }) => {
       <div>
         <h1>Số vi phạm: {violationCount}</h1>
         <h2>Ngày cập nhật: {updateTime}</h2>
+        <h2>Nguồn dữ liệu: <a
+            href='https://www.facebook.com/groups/129222367470578'
+            target='_blank'
+          >
+           Cảnh sát giao thông CATP Đà Nẵng
+          </a>
+        </h2>
       </div>
     </div>
   );
