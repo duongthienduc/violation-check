@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -55,8 +57,9 @@ public class ParseData {
 				jsonArray.add(rowJSONObj);
 			}
 
-			System.out.println("Num items:" + jsonArray.size());
-			jsonObject.put("date", new Date().toString());
+			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+			System.out.println("Num items:" + jsonArray.size() + ", " + dateFormat.format(new Date()));
+			jsonObject.put("date", dateFormat.format(new Date()));
 			jsonObject.put("items", jsonArray);
 
 			String projectDir = System.getProperty("user.dir");
