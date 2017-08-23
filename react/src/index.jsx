@@ -4,7 +4,6 @@ import { Throttle } from 'react-throttle';
 import ReactGA from 'react-ga';
 import {Table, Column, Cell} from 'fixed-data-table-2';
 import axios from 'axios';
-import dateFormat from 'date-format-lite';
 import shortid from 'shortid';
 
 import '../public/assets/css/style.css';
@@ -116,7 +115,7 @@ class ViolationCheckerApp extends React.Component {
     }
 
     this.originalData = [];
-    this.jsonUrl = '/resources/data.json';
+    this.jsonUrl = '/resources/data.json?date=20082017';
   }
   // Lifecycle method
   componentDidMount() {
@@ -127,13 +126,13 @@ class ViolationCheckerApp extends React.Component {
 
         // Set state with result
         this.setState({
-          updateTime: res.data.date.date().format('YYYY-MM-DD hh:mm:ss'),
+          updateTime: res.data.date,
         });
       });
   }
 
   handleBoardFilter = (evt) => {
-    var boardFilter = evt.target.value.trim();
+    var boardFilter = evt.target.value.trim().toLowerCase();
     var filteredData = [];
 
     if ('***' === boardFilter) {
@@ -146,7 +145,10 @@ class ViolationCheckerApp extends React.Component {
 
     if (boardFilter && boardFilter.length >= MIN_BOARD_DIGITS_TO_SEARCH) {
       filteredData = this.originalData.filter((item) => {
-        return item.board.replace('.', '').indexOf(boardFilter) > -1;
+        var boardNo = item.board.toLowerCase();
+
+        return boardNo.indexOf(boardFilter) > -1 ||
+          boardNo.replace(/[-.]/g, '').indexOf(boardFilter) > -1;
       });
     }
 

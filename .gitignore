@@ -6,3 +6,6 @@
 /react/dist
 react/public/assets/js/bundle*
 react/public/index.html
+/fabric*-analytics.log
+/react/public/assets/css/app.css
+/react/public/assets/css/app.css.map

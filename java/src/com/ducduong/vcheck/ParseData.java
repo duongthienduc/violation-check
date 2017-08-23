@@ -1,15 +1,11 @@
+
 package com.ducduong.vcheck;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -23,21 +19,24 @@ import org.json.simple.JSONObject;
 
 public class ParseData {
 
-	private static final String REACT_PUBLIC_RESOURCES_DATA_JSON = "/react/public/resources/data.json";
+	private static final String REACT_PUBLIC_RESOURCES_DATA_JSON =
+		"/react/public/resources/data.json";
 
+	@SuppressWarnings("unchecked")
 	public static void main(String[] args) {
 
 		InputStream is = ParseData.class.getResourceAsStream("/data.xlsx");
+
+		@SuppressWarnings("resource")
 		Workbook workbook = null;
 
 		try {
 			workbook = new XSSFWorkbook(is);
 			Sheet datatypeSheet = workbook.getSheetAt(0);
 			Iterator<Row> iterator = datatypeSheet.iterator();
-			List<String[]> datas = new ArrayList<String[]>();
 
+			// Skip header row
 			iterator.next();
-
 
 			JSONObject jsonObject = new JSONObject();
 			JSONArray jsonArray = new JSONArray();
@@ -45,7 +44,6 @@ public class ParseData {
 			while (iterator.hasNext()) {
 
 				Row row = iterator.next();
-				String[] data = new String[4];
 
 				JSONObject rowJSONObj = new JSONObject();
 				rowJSONObj.put("date", getCellValue(row.getCell(1)));
@@ -57,13 +55,16 @@ public class ParseData {
 				jsonArray.add(rowJSONObj);
 			}
 
-			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
-			System.out.println("Num items:" + jsonArray.size() + ", " + dateFormat.format(new Date()));
-			jsonObject.put("date", dateFormat.format(new Date()));
+			String updateDate =
+				(String) ((JSONObject) jsonArray.get(0)).get("date");
+			System.out.println(
+				"Num items:" + jsonArray.size() + ", " + updateDate);
+			jsonObject.put("date", updateDate);
 			jsonObject.put("items", jsonArray);
 
 			String projectDir = System.getProperty("user.dir");
-			File outFile = new File(projectDir + REACT_PUBLIC_RESOURCES_DATA_JSON);
+			File outFile =
+				new File(projectDir + REACT_PUBLIC_RESOURCES_DATA_JSON);
 			File parentDir = outFile.getParentFile();
 			parentDir.mkdirs();
 
@@ -71,12 +72,15 @@ public class ParseData {
 			fileWriter.write(jsonObject.toJSONString());
 			fileWriter.flush();
 			fileWriter.close();
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			e.printStackTrace();
-		} finally {
+		}
+		finally {
 			try {
 				is.close();
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				e.printStackTrace();
 			}
 
@@ -84,13 +88,16 @@ public class ParseData {
 				if (workbook != null) {
 					workbook.close();
 				}
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	private static String getCellValue(Cell cell) {
+
 		// cell.setCellType(Cell.CELL_TYPE_STRING);
 		if (cell.getCellTypeEnum().equals(CellType.NUMERIC)) {
 			DataFormatter df = new DataFormatter();
