@@ -115,7 +115,7 @@ class ViolationCheckerApp extends React.Component {
     }
 
     this.originalData = [];
-    this.jsonUrl = '/resources/data.json?date=20082017';
+    this.jsonUrl = '/resources/data.json?date=27082017';
   }
   // Lifecycle method
   componentDidMount() {
