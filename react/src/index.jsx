@@ -1,10 +1,9 @@
 import React from 'react';
 import { render } from 'react-dom';
-import { Throttle } from 'react-throttle';
+import { Debounce } from 'react-throttle';
 import ReactGA from 'react-ga';
 import {Table, Column, Cell} from 'fixed-data-table-2';
 import axios from 'axios';
-import shortid from 'shortid';
 
 import '../public/assets/css/style.css';
 import '../public/assets/css/fixed-data-table.css';
@@ -13,6 +12,7 @@ ReactGA.initialize('UA-4112584-7');
 ReactGA.ga('send', 'pageview');
 
 const MIN_BOARD_DIGITS_TO_SEARCH = 3;
+const DETAILS_URL = 'http://www.catp.danang.gov.vn:8001/thongtinvipham/view.php?bienso=';
 
 const Title = ({ violationCount, updateTime }) => {
   return (
@@ -46,7 +46,7 @@ const ViolationTable = ({ violations, remove }) => {
     <Table
       rowHeight={50}
       rowsCount={violations.length}
-      width={1400}
+      width={1130}
       height={600}
       headerHeight={50}
     >
@@ -95,7 +95,22 @@ const ViolationTable = ({ violations, remove }) => {
             {violations[rowIndex].location}
           </Cell>
         )}
-        width={600}
+        width={300}
+      />
+      <Column
+        header={<Cell>Tra Cứu</Cell>}
+        cell={({rowIndex, ...props}) => (
+          <Cell {...props}>
+            <a
+              target='_blank'
+              href={DETAILS_URL + encodeURIComponent(violations[rowIndex].board)}
+            >
+
+              <img src='/assets/images/lookup_icon.png' alt='Tra cứu' width={32} height={32} />
+            </a>
+          </Cell>
+        )}
+        width={100}
       />
     </Table>
   );
@@ -132,8 +147,8 @@ class ViolationCheckerApp extends React.Component {
   }
 
   handleBoardFilter = (evt) => {
-    var boardFilter = evt.target.value.trim().toLowerCase();
-    var filteredData = [];
+    let boardFilter = evt.target.value.trim().toLowerCase();
+    let filteredData = [];
 
     if ('***' === boardFilter) {
       this.setState({
@@ -145,7 +160,7 @@ class ViolationCheckerApp extends React.Component {
 
     if (boardFilter && boardFilter.length >= MIN_BOARD_DIGITS_TO_SEARCH) {
       filteredData = this.originalData.filter((item) => {
-        var boardNo = item.board.toLowerCase();
+        let boardNo = item.board.toLowerCase();
 
         return boardNo.indexOf(boardFilter) > -1 ||
           boardNo.replace(/[-.]/g, '').indexOf(boardFilter) > -1;
@@ -164,12 +179,12 @@ class ViolationCheckerApp extends React.Component {
 
         <div className='filter-wrapper'>
           <span>Tìm biển số:</span>
-          <Throttle time="500" handler="onChange">
+          <Debounce time="500" handler="onChange">
             <input
               name='filterBoard' onChange={this.handleBoardFilter}
               placeholder='Nhập từ 3 chữ số trở lên để tìm kiếm'
             />
-          </Throttle>
+          </Debounce>
         </div>
 
         <div className='violations-wrapper'>
