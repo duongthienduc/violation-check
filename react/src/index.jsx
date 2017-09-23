@@ -1,9 +1,9 @@
 import React from 'react';
 import { render } from 'react-dom';
-import { Debounce } from 'react-throttle';
 import ReactGA from 'react-ga';
 import {Table, Column, Cell} from 'fixed-data-table-2';
 import axios from 'axios';
+import { debounce } from 'throttle-debounce';
 
 import '../public/assets/css/style.css';
 import '../public/assets/css/fixed-data-table.css';
@@ -127,10 +127,12 @@ class ViolationCheckerApp extends React.Component {
       data: [],
       filterBoard: '',
       updateTime: '',
-    }
+    };
 
     this.originalData = [];
     this.jsonUrl = '/resources/data.json?date=13092017';
+
+    this.doSearch = debounce(500, false, this.doSearch);
   }
   // Lifecycle method
   componentDidMount() {
@@ -146,8 +148,7 @@ class ViolationCheckerApp extends React.Component {
       });
   }
 
-  handleBoardFilter = (evt) => {
-    let boardFilter = evt.target.value.trim().toLowerCase();
+  doSearch = (boardFilter) => {
     let filteredData = [];
 
     if ('***' === boardFilter) {
@@ -172,6 +173,12 @@ class ViolationCheckerApp extends React.Component {
     });
   };
 
+  handleBoardFilter = (evt) => {
+    let boardFilter = evt.target.value.trim().toLowerCase();
+
+    this.doSearch(boardFilter);
+  };
+
   render() {
     return (
       <div>
@@ -179,12 +186,11 @@ class ViolationCheckerApp extends React.Component {
 
         <div className='filter-wrapper'>
           <span>Tìm biển số:</span>
-          <Debounce time="500" handler="onChange">
-            <input
-              name='filterBoard' onChange={this.handleBoardFilter}
-              placeholder='Nhập từ 3 chữ số trở lên để tìm kiếm'
-            />
-          </Debounce>
+
+          <input
+            name='filterBoard' onChange={this.handleBoardFilter}
+            placeholder='Nhập từ 3 chữ số trở lên để tìm kiếm'
+          />
         </div>
 
         <div className='violations-wrapper'>
